@@ -30,17 +30,33 @@ export const loginService = async ({ username, password }) => {
 
 // Registro
 export const registerService = async ({ username, email, password }) => {
-    const existingUser = await Usuario.findOne({ $or: [{ username }, { email }] });
-    if (existingUser) {
-        const err = new Error("Usuario o email ya existe");
-        err.status = 409;
+    // 1️⃣ Validaciones básicas
+    if (!username || !email || !password) {
+        const err = new Error("Todos los campos son obligatorios");
+        err.status = 400;
         throw err;
     }
 
+    if (!email.includes("@")) {
+        const err = new Error("Email inválido");
+        err.status = 400;
+        throw err;
+    }
+
+    // 2️⃣ Verificar si ya existe el usuario
+    const existingUser = await Usuario.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+        const err = new Error("Usuario o email ya existe");
+        err.status = 409; // conflicto
+        throw err;
+    }
+
+    // 3️⃣ Crear usuario
     const hashPassword = await bcrypt.hash(password, 10);
     const nuevoUsuario = new Usuario({ username, email, password: hashPassword });
     await nuevoUsuario.save();
 
+    // 4️⃣ Generar token
     const token = jwt.sign(
         { id: nuevoUsuario._id, username: nuevoUsuario.username },
         process.env.JWT_SECRET,
@@ -57,3 +73,4 @@ export const registerService = async ({ username, email, password }) => {
         }
     };
 };
+
