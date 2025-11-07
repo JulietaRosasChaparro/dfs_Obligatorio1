@@ -26,6 +26,7 @@ app.use(
         "http://localhost:5173",
         "https://dfs-obligatorio.vercel.app",
       ];
+
       if (
         allowedOrigins.includes(origin) ||
         (origin && origin.endsWith(".julietarosas-projects.vercel.app"))
@@ -36,10 +37,12 @@ app.use(
       }
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // incluimos OPTIONS
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors());
 
 
 app.use(express.json());
