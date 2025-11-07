@@ -7,7 +7,7 @@ const recetaSchema = new mongoose.Schema(
     descripcion: { type: String, required: true },
     ingredientes: [ingredienteSchema], // aquí usamos el schema ya creado
     pasos: [{ type: String, required: true }],
-    categoria: { type: mongoose.Schema.Types.ObjectId, ref: "Categoria" },
+    categoria: { type: mongoose.Schema.Types.String, ref: "Categoria" },
     autor: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario" },
     tiempoPreparacion: { type: Number }, // en minutos
     dificultad: { type: String, enum: ["Fácil", "Intermedio", "Difícil"] },

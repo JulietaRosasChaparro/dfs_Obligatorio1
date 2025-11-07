@@ -1,26 +1,41 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import cors from 'cors';
+import connectDB from './config/db.js';
+
+// Rutas
 import authRoutes from './routes/auth.routes.js';
 import usuarioRoutes from './routes/usuario.routes.js';
 import recetaRoutes from './routes/receta.routes.js';
 import categoriaRoutes from './routes/categoria.routes.js';
+
+// Middlewares
 import { authenticateMiddleware } from './middlewares/auth.middleware.js';
+import { notFoundMiddleware } from './middlewares/notFound.middleware.js';
+import { errorMiddleware } from './middlewares/error.middleware.js';
+
+dotenv.config();
+connectDB();
 
 const app = express();
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Rutas públicas
-app.use('/auth', authRoutes);
+// 2️⃣ Rutas públicas
+app.use('/v1/auth', authRoutes);
 
-// Middleware de autenticación
+// 3️⃣ Middleware de autenticación (solo rutas protegidas)
 app.use(authenticateMiddleware);
 
-// Rutas protegidas
-app.use('/usuarios', usuarioRoutes);
-app.use('/recetas', recetaRoutes);
-app.use('/categorias', categoriaRoutes);
+// 4️⃣ Rutas protegidas
+app.use('/v1/usuarios', usuarioRoutes);
+app.use('/v1/recetas', recetaRoutes);
+app.use('/v1/categorias', categoriaRoutes);
+
+// 5️⃣ Error 404 y error global
+app.use(notFoundMiddleware);
+app.use(errorMiddleware);
 
 export default app;

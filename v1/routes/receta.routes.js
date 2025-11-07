@@ -1,5 +1,5 @@
 import express from "express";
-import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { authenticateMiddleware } from "../middlewares/auth.middleware.js";
 import {
   crearRecetaController,
   eliminarRecetaController,
@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authenticateMiddleware);
 
 router.post("/", crearRecetaController)      // Alta
 router.get("/", obtenerRecetasController)         // Consulta

@@ -1,7 +1,9 @@
 import { cambiarPlanService } from "../services/usuario.services.js";
+import connectDB from "../config/db.js";
 
 export const cambiarPlanController = async (req, res) => {
     try {
+        await connectDB()
         const usuarioActualizado = await cambiarPlanService(req.user.id);
 
         res.status(200).json({

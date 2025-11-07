@@ -6,10 +6,12 @@ import {
   buscarRecetasPorTodosIngredientes,
   buscarRecetasPorAlgunoIngrediente
 } from "../services/receta.services.js";
+import connectDB from "../config/db.js";
 
 // Crear nueva receta
 export const crearRecetaController = async (req, res) => {
   try {
+    await connectDB()
     const nuevaReceta = await crearRecetaService(req.user.id, req.body);
     res.status(201).json(nuevaReceta);
   } catch (err) {
@@ -20,6 +22,7 @@ export const crearRecetaController = async (req, res) => {
 // Eliminar receta existente
 export const eliminarRecetaController = async (req, res) => {
   try {
+    await connectDB()
     const recetaEliminada = await eliminarRecetaService(req.user.id, req.params.id);
     res.status(200).json({ mensaje: "Receta eliminada", receta: recetaEliminada });
   } catch (err) {
@@ -30,6 +33,7 @@ export const eliminarRecetaController = async (req, res) => {
 // Actualizar receta existente
 export const actualizarRecetaController = async (req, res) => {
   try {
+    await connectDB()
     const recetaActualizada = await actualizarRecetaService(req.user.id, req.params.id, req.body);
     res.status(200).json(recetaActualizada);
   } catch (err) {
@@ -40,6 +44,7 @@ export const actualizarRecetaController = async (req, res) => {
 // Obtener todas las recetas del usuario
 export const obtenerRecetasController = async (req, res) => {
   try {
+    await connectDB()
     const recetas = await obtenerRecetasService(req.user.id);
     res.status(200).json(recetas);
   } catch (err) {
@@ -50,6 +55,7 @@ export const obtenerRecetasController = async (req, res) => {
 // Buscar recetas que contengan los ingredientes especificados
 export const getRecetasPorIngredientes = async (req, res) => {
   try {
+    await connectDB()
     const { ingredientes, tipo } = req.query;
 
     if (!ingredientes) {

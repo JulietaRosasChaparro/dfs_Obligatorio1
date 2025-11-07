@@ -6,9 +6,9 @@ import { loginSchema, registerSchema } from '../validators/auth.validator.js';
 const router = express.Router();
 
 // Ruta de login
-router.post('/login', validateBodyMiddleware(loginSchema), loginController);
+router.post('/login', loginController);
 
 // Ruta de registro
-router.post('/register', validateBodyMiddleware(registerSchema), registerController);
+router.post('/register', registerController);
 
 export default router;
