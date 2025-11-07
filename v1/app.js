@@ -21,15 +21,26 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "https://dfs-obligatorio.vercel.app", 
-      "http://localhost:5173",              
-    ],
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "https://dfs-obligatorio.vercel.app",
+      ];
+      if (
+        allowedOrigins.includes(origin) ||
+        (origin && origin.endsWith(".julietarosas-projects.vercel.app"))
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS bloqueado para este origen: " + origin));
+      }
+    },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
