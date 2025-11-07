@@ -19,34 +19,32 @@ connectDB();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "https://dfs-obligatorio.vercel.app",
-      ];
+// 🔥 CONFIGURACIÓN CORS CORREGIDA Y SIMPLIFICADA
+const corsOptions = {
+  origin: [
+    "https://dfs-obligatorio.vercel.app",
+    "http://localhost:5173"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
 
-      if (
-        allowedOrigins.includes(origin) ||
-        (origin && origin.endsWith(".julietarosas-projects.vercel.app"))
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS bloqueado para este origen: " + origin));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // incluimos OPTIONS
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors(corsOptions));
 
-app.options("*", cors());
-
+// Manejar preflight requests explícitamente
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware de logging para debugging
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
 
 // 2️⃣ Rutas públicas
 app.use('/v1/auth', authRoutes);
@@ -62,5 +60,16 @@ app.use('/v1/categorias', categoriaRoutes);
 // 5️⃣ Error 404 y error global
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
+
+// Manejo de errores de CORS
+app.use((error, req, res, next) => {
+  if (error.message.includes('CORS')) {
+    return res.status(403).json({
+      error: 'Acceso CORS denegado',
+      details: error.message
+    });
+  }
+  next(error);
+});
 
 export default app;
