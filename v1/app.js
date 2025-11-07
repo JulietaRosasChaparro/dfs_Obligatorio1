@@ -19,7 +19,7 @@ connectDB();
 
 const app = express();
 
-// 🔥 CONFIGURACIÓN CORS CORREGIDA Y SIMPLIFICADA
+// 🔥 CONFIGURACIÓN CORS CORREGIDA - SIN app.options("*")
 const corsOptions = {
   origin: [
     "https://dfs-obligatorio.vercel.app",
@@ -28,23 +28,14 @@ const corsOptions = {
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 200
 };
 
+// Aplica CORS a todas las rutas
 app.use(cors(corsOptions));
-
-// Manejar preflight requests explícitamente
-app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Middleware de logging para debugging
-app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
-  next();
-});
 
 // 2️⃣ Rutas públicas
 app.use('/v1/auth', authRoutes);
@@ -60,16 +51,5 @@ app.use('/v1/categorias', categoriaRoutes);
 // 5️⃣ Error 404 y error global
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
-
-// Manejo de errores de CORS
-app.use((error, req, res, next) => {
-  if (error.message.includes('CORS')) {
-    return res.status(403).json({
-      error: 'Acceso CORS denegado',
-      details: error.message
-    });
-  }
-  next(error);
-});
 
 export default app;
