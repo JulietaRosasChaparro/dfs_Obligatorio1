@@ -19,7 +19,6 @@ connectDB();
 
 const app = express();
 
-// 🔥 CONFIGURACIÓN CORS CORREGIDA - SIN app.options("*")
 const corsOptions = {
   origin: [
     "https://dfs-obligatorio.vercel.app",
@@ -31,7 +30,6 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Aplica CORS a todas las rutas
 app.use(cors(corsOptions));
 
 app.use(express.json());
@@ -40,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 // 2️⃣ Rutas públicas
 app.use('/v1/auth', authRoutes);
 
-// 3️⃣ Middleware de autenticación (solo rutas protegidas)
+// 3️⃣ Middleware de autenticación
 app.use(authenticateMiddleware);
 
 // 4️⃣ Rutas protegidas
